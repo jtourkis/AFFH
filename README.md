@@ -15,7 +15,7 @@ Spacial Object Conversion, Mapping, and Basic Clustering/Autocorrelation Tests
   <p align="center">
    
   
-  <b>Goal:</b> This project attempts to use AFFH census data with GIS/spacial data analysis methods.
+  <b>Goal:</b> This project uses AFFH census data with GIS/spacial data with a variety of analysis methods.
     <br />
     <a href="https://github.com/jtourkis/AFFH"><strong>Explore the docs »</strong></a>
     <br />
