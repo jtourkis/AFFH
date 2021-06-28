@@ -6,16 +6,16 @@ Spacial Object Conversion, Mapping, and Basic Clustering/Autocorrelation Tests
 <br />
 
   
-  <h3 align="center">Semiconductor Industry Evaluation & Queuing Model Paper </h3>
+  <h3 align="center">GIS/Spacial Data Analysis Using HUD AFFH Data</h3>
   
 <p align="center">
   <a href="https://github.com/jtourkis/AFFH">
-    <img src="Affordable.png" alt="AFFH" width="300" height="300" style="border:5px solid black">
+    <img src="Affordable.png" alt="AFFH" width="600" height="600" style="border:5px solid black">
   </a>
   <p align="center">
    
   
-  <b>Goal:</b> This project explores GIS/spacial data analysis.
+  <b>Goal:</b> This project attempts to use AFFH census data with GIS/spacial data analysis methods.
     <br />
     <a href="https://github.com/jtourkis/AFFH"><strong>Explore the docs »</strong></a>
     <br />
@@ -50,12 +50,18 @@ Spacial Object Conversion, Mapping, and Basic Clustering/Autocorrelation Tests
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Spacial Object Conversion, Mapping, and Basic Clustering/Autocorrelation Tests
+The project covers Spacial Object Conversion, Mapping, and Basic Clustering/Autocorrelation Tests.
 
 ### Built With
 
-* [Python](https://www.python.org) / [Jupyter Notebook](https://jupyter.org)
-* [Numpy](https://numpy.org) 
+* [R](https://www.r-project.org) / [R Studio](https://www.rstudio.com)
+* [sf](https://r-spatial.github.io/sf/)
+* [sp](https://cran.r-project.org/web/packages/sp/index.html)
+* [tmap](https://github.com/mtennekes/tmap)
+* [spdep](https://cran.r-project.org/web/packages/spdep/index.html)
+* [tigris](https://cran.r-project.org/web/packages/tigris/tigris.pdf)
+* Many other packages.
+
 
 <!-- GETTING STARTED -->
 ## Getting Started
