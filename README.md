@@ -5,7 +5,7 @@
 <br />
 
   
-  <h3 align="center">GIS/Spacial Data Analysis Using HUD AFFH Data</h3>
+  <h3 align="center">GIS/Spacial Data Analysis Using HUD Affirmatively Furthering Fair Housing(AFFH) Data</h3>
   
 <p align="center">
   <a href="https://github.com/jtourkis/AFFH">
@@ -14,7 +14,7 @@
   <p align="center">
    
   
-  <b>Goal:</b> This project uses AFFH census data with GIS/spacial data with a variety of analysis methods.
+  <b>Goal:</b> This project combines 2020 AFFH census data with GIS/spacial data with a variety of analysis methods. 
     <br />
     <a href="https://github.com/jtourkis/AFFH"><strong>Explore the docs »</strong></a>
     <br />
@@ -104,7 +104,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 <!-- ROADMAP -->
 ## Roadmap
-Using Affirmatively Furthering Fair Housing census tract data from HUD, this code performs the following tasks:
+Using 2020 Affirmatively Furthering Fair Housing census tract data from HUD, this code performs the following tasks:
 
 1) Use geo_id and TIGRIS to add spacial geometry and convert data to the proper SF/ SP data object for task;
 
@@ -112,6 +112,7 @@ Using Affirmatively Furthering Fair Housing census tract data from HUD, this cod
 
 3) Perform basic cluster analysis using local Morans I/local G-Stat and create interactive map emphasizing statistically significant regions. 
 
+**Dataset Used:** AFFH_tract_AFFHT0006_July2020.csv from Urban Institute repository. See Acknowledgements for link. 
 
 See the [open issues](https://github.com/github_username/repo/issues) for a list of proposed features (and known issues).
 
