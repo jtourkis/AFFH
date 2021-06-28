@@ -1,5 +1,4 @@
-# AFFH
-Spacial Object Conversion, Mapping, and Basic Clustering/Autocorrelation Tests
+
  [![MIT License][license-shield]][license-url]
   [![LinkedIn][linkedin-shield]][linkedin-url]
 
