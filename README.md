@@ -156,6 +156,7 @@ Project Link: [https://github.com/jtourkis/AFFH](https://github.com/jtourkis/AFF
 * [HUD Affirmatively Furthering Fair Housing](https://www.hud.gov/program_offices/fair_housing_equal_opp/affh)
 * [Urban Institute AFFH Data Repository](https://datacatalog.urban.org/dataset/data-and-tools-fair-housing-planning/resource/a74665c3-6fa0-4d84-9c1e-d40fc3cf0f8c)
 * [An Introduction to R for Spatial Analysis and Mapping](https://uk.sagepub.com/en-gb/eur/an-introduction-to-r-for-spatial-analysis-and-mapping/book258267)
+* [Urban Institute 2020 AFFH Data Download Link](https://datacatalog.urban.org/dataset/data-and-tools-fair-housing-planning/resource/a74665c3-6fa0-4d84-9c1e-d40fc3cf0f8c)
 
 
 
