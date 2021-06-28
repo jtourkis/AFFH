@@ -1,0 +1,213 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+
+                                                 ####James Tourkistas Affordable Housing Rental EDA
+                                          ####Spacial Object Conversion, Mapping, and Basic Clustering/Autocorrelation Tests
+
+library(dplyr)
+library(tidyverse)
+library(cowplot)
+library(ggplot2)
+library(plyr)
+library(reshape2)
+library(tidycensus)
+library(tigris)
+library(sf)
+library(leaflet)
+library(tmap)
+
+options(scipen=999)
+
+###Census API Example
+
+#census_api_key("API KEY")
+
+#ca.tracts <- get_acs(geography = "tract", 
+#              year = 2019,
+#              variables = c(tpopr = "B03002_001", 
+#                            nhwhite = "B03002_003", nhblk = "B03002_004", 
+#                            nhasn = "B03002_006", hisp = "B03002_012",
+#                            tothhs = "B11001_001"), 
+#              state = "CA",
+#              survey = "acs5",
+#              geometry = TRUE)
+
+#glimpse(ca.tracts)
+
+####Housing Data Analysis###
+
+setwd('Place Working Director Here')
+
+
+####Affirmatively Further Fair Housing (AFFH) Data Analysis###
+
+###Census File
+AFFH_tract_AFFHT0006_July2020<-read.csv("AFFH_tract_AFFHT0006_July2020.csv")
+
+####Get Massachusetts Shape files using TIGRIS:
+###Tigris State Shape Files (Tracts Example)
+MA_Tracts<-tracts("MA", year=2020)
+
+###CLASS: sf Dataframe
+class(MA_Tracts)
+
+####Get only Massachusetts Data from AFFH Census Tract Data
+AFFH_MA_tract<-filter(AFFH_tract_AFFHT0006_July2020, state_name=="Massachusetts")
+
+###CHANGE geoid to character to match:
+AFFH_MA_tract$geoid<-as.character(AFFH_MA_tract$geoid)
+
+class(AFFH_MA_tract)
+
+####Combine Census Data with Shape Information:
+
+AFFH_MA_tract_shp<- left_join(AFFH_MA_tract, MA_Tracts, by = c("geoid" = "GEOID"))
+
+###Dataframe 
+class(AFFH_MA_tract_shp)
+
+####AFFORDABLE RENTAL HOUSING UNITS ANALYSIS
+
+#Indicators of Interest: Poverty Rate of 25% or more: pct_poor, Current ReCAP Flag (Racially or Ethnically Concentrated Areas of Poverty): RCAP_current;
+#Total Houses with Severe Cost Burden: hh_all_severe_burden; Affordable Rental Units:hh_affordable_renters. 
+
+
+####Reduce Data to Geometry and Affordable Renter Units:
+myvars <- names(AFFH_MA_tract_shp) %in% c("geoid","NAMELSAD", "hh_affordable_renters", "pct_poor", "rcap_current", "hh_all_severe_burden","county_name", "geometry") 
+Affordable<- AFFH_MA_tract_shp[myvars]
+
+st_geometry(st_as_sf(Affordable)) %>% plot()
+
+Affordable_sf<-st_as_sf(Affordable)
+
+class(Affordable_sf)
+
+###Create Shape File
+
+###Write to Shape File
+st_write(Affordable_sf, "Affordable_sf2.shp", driver="ESRI Shapefile", delete_layer=T)
+Affordable_sf2 <-st_read("Affordable_sf2.shp")
+
+
+###CREATE PLOT AND WRITE TO PNG
+tmap_mode("plot")
+###Write to PNG
+#png("Affordable.png", width = 20, height = 20, units = 'in', res = 600)
+
+###TMAP: Median Income Using SF File
+
+qtm(Affordable_sf2, fill="hh_ffr_", 
+    format="World_wide", style="classic", 
+    text.root=5, fill.title="Affordable Housing Units")+tm_layout(title="Massachusetts Affordable Housing",title.size=1.6,
+          legend.title.size = 1.4,
+          legend.text.size = .8,
+          legend.position = c("left","bottom"),
+          legend.bg.color = "white",
+          legend.bg.alpha = 1)
+
+####End Png Write
+#dev.off()
+
+
+
+####PERFORM CLUSTER/SPATIAL ASSOCIATION ANALYSIS WITH LOCAL MORANS I and G-Statistic
+
+library(spdep)
+
+
+##Remove Empty Data Frames to Allow for Conversion
+af_2 <-Affordable_sf2[ ! st_is_empty( Affordable_sf2) , ]
+
+###Convert
+af_2.sp <- as_Spatial( af_2 )
+
+# Create NB Object
+lw <-poly2nb(af_2.sp)
+lw <- nb2listw(lw, zero.policy=TRUE)
+
+
+###Calculate local G and Add as a Column
+lG <- localG(af_2$hh_ffr_,lw)
+af_2$lG <- lG
+
+####Calculate Local Moran and Add as a Column
+lI <- localmoran(af_2$hh_ffr_,lw)
+af_2$lI <- lI[,1]
+
+####Calculate Local Moran pvalue and Add as a Column
+###Create Local Moran P-Value
+af_2$pvalue<-lI[,5]
+
+###Create Under .05 Pvalue Dummy
+
+af_2$pvalue_dummy[af_2$pvalue<=.05]<-1
+af_2$pvalue_dummy[is.na(af_2$pvalue_dummy)]<-0 
+af_2$pvalue_dummy<-as.factor(af_2$pvalue_dummy)
+
+####Grid of Maps
+tmap_mode("plot")
+# 1st plot of georgia
+t1 <- tm_shape(af_2) +
+  tm_polygons("lG", title = "Clustering", palette = "PRGn",
+              style = "kmeans",
+              legend.hist = T) +
+  tm_layout(frame = F, title = "G-stat of Affordable Housing",  
+            legend.hist.size = 0.5, 
+            legend.outside = T) 
+# 2nd plot of georgia2
+t2 <- tm_shape(af_2) +
+  tm_polygons("lI", title = "Clustering", palette = "PRGn",
+              style = "kmeans",
+              legend.hist = T) +
+  tm_layout(frame = F, title = "Moran's I of Affordable Housing",  
+            legend.hist.size = 0.5, 
+            legend.outside = T) 
+
+library(grid)
+# open a new plot page
+grid.newpage()
+# set up the layout
+pushViewport(viewport(layout=grid.layout(1,2)))
+# plot using the print command
+print(t1, vp=viewport(layout.pos.col = 1, height = 10))
+print(t2, vp=viewport(layout.pos.col = 2, height = 10))
+
+###CREATE PLOT WITH ONLY LOW PVALUE TRACTS
+
+# the tract indices below where pvalue is less than .05 
+af_2$rcp_crr[af_2$rcp_crr==1]<-"RECAPS"
+af_2$rcp_crr[af_2$rcp_crr!=1]<-"Not RECAPS"
+af_2.sub <- af_2[af_2$pvalue_dummy==1,]
+
+
+####Interaactive Map
+tmap_mode('view')
+tm_shape(af_2) +
+  tm_fill("white",popup.vars=c("County"="cnty_nm","Tract"="NAMELSA","R/ECAPS Status"="rcp_crr","Poverty Rate (%)"="pct_por","Moran I"="lI","G-Stat"="lG", "Affordable Units"="hh_ffr_",  "p-value"="pvalue")) +
+  tm_borders("grey", lwd = 0.5)+tm_shape(af_2.sub)+tm_polygons("lI", title = "Clustering", palette = "PRGn",
+              style = "kmeans",
+              legend.hist = T,popup.vars=c("County"="cnty_nm","Tract"="NAMELSA","R/ECAPS Status"="rcp_crr","Poverty Rate (%)"="pct_por","Moran I"="lI","G-Stat"="lG", "Affordable Units"="hh_ffr_",  "p-value"="pvalue")) +
+  tm_layout(frame = F, title = "Moran's I p-values<=.05",  
+            legend.hist.size = 0.5, 
+            legend.outside = T)
+
+tmap_mode("plot")
+
+
+
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
